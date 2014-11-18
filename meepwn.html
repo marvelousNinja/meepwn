@@ -4,16 +4,7 @@
 </head>
 
 <body>
-    <div id="container">
-    <ul>
-      <li>Root node
-        <ul>
-          <li>Child node 1</li>
-          <li>Child node 2</li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+    {{> projectTree currentProject}}
     {{> main}}
 </body>
 
@@ -61,4 +52,11 @@
             <button class="btn btn-danger btn-small">Delete this document</button>
         </form>
     </div>
+</template>
+
+<!-- BEM IS STARTING HERE -->
+
+<template name='projectTree'>
+  <div class='project-tree'>
+  </div>
 </template>
