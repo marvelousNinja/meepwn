@@ -4,59 +4,6 @@
 </head>
 
 <body>
-    {{> projectTree currentProject}}
-    {{> main}}
+    {{> tree}}
+    {{> editor}}
 </body>
-
-<template name="main">
-    <div class="container full-height">
-        <div class="row upper">
-            <div class="col-xs-3 full-height">
-                {{> docList}}
-            </div>
-            <div class="col-xs-9 editor-container full-height">
-                {{> editor}}
-            </div>
-        </div>
-    </div>
-</template>
-
-<template name="docList">
-    <h3>Pick a document...</h3>
-    <ul class="nav nav-pills nav-stacked" id="list">
-    {{#each documents}}
-    {{> docItem}}
-    {{/each}}
-    </ul>
-    <h3>...or start a new one:</h3>
-    <button class="btn btn-warning">New document</button>
-</template>
-
-<template name="docItem">
-    <li class="{{#if current}}active{{/if}}">
-         <a href="#">{{title}}</a>
-    </li>
-</template>
-
-<template name="editor">
-    {{#with docid}}
-        {{> docTitle this}}
-        {{> sharejsCM docid=this onRender=configCM id="editor"}}
-    {{/with}}
-</template>
-
-<template name="docTitle">
-    <div class="navbar navbar-default">
-        <form class="navbar-form pull-left">
-            <input class="form-control" type="text" name="title" value="{{title}}">
-            <button class="btn btn-danger btn-small">Delete this document</button>
-        </form>
-    </div>
-</template>
-
-<!-- BEM IS STARTING HERE -->
-
-<template name='projectTree'>
-  <div class='project-tree'>
-  </div>
-</template>
