@@ -2,7 +2,7 @@
   <div class='editor'>
     {{#with currentFile}}
       {{> editor__panel this}}
-      {{> sharejsAce docid=this onRender=configAce id='editor'}}
+      {{> editor__window this}}
     {{/with}}
   </div>
 </template>
