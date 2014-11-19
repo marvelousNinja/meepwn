@@ -1,7 +1,9 @@
 if (Meteor.isClient) {
+  Session.set('project', '1');
+
   Template.editor.helpers({
-    docid: function() {
-      return Session.get('document');
+    currentFile: function() {
+      return Session.get('currentFile');
     }
   });
 
@@ -12,7 +14,7 @@ if (Meteor.isClient) {
         cm.setOption('lineNumbers', true);
         cm.setOption('lineWrapping', true);
         cm.setOption('smartIndent', true);
-        return cm.setOption('indentWithTabs', true);
+        cm.setOption('indentWithTabs', true);
       };
     }
   });

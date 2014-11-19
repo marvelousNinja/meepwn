@@ -1,6 +1,6 @@
 <template name='editor'>
   <div class='editor'>
-    {{#with docid}}
+    {{#with currentFile}}
       {{> editor__panel this}}
       {{> sharejsCM docid=this onRender=configCM id='editor'}}
     {{/with}}
