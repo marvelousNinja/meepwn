@@ -40,7 +40,7 @@ meteor-platform@1.2.0
 meteor@1.1.3
 minifiers@1.1.2
 minimongo@1.0.5
-mizzao:sharejs-codemirror@4.7.0
+mizzao:sharejs-ace@1.1.2
 mizzao:sharejs@0.7.0
 mobile-status-bar@1.0.1
 mongo-livedata@1.0.6

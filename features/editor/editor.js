@@ -8,13 +8,11 @@ if (Meteor.isClient) {
   });
 
   Template.editor.helpers({
-    configCM: function() {
-      return function(cm) {
-        cm.setOption('theme', 'default');
-        cm.setOption('lineNumbers', true);
-        cm.setOption('lineWrapping', true);
-        cm.setOption('smartIndent', true);
-        cm.setOption('indentWithTabs', true);
+    configAce: function() {
+      return function(editor) {
+        editor.getSession().setMode('ace/mode/javascript');
+        editor.setShowPrintMargin(false);
+        editor.getSession().setUseWrapMode(true);
       };
     }
   });
