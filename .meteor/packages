@@ -9,4 +9,6 @@ insecure
 mizzao:sharejs-codemirror
 stylus
 dburles:collection-helpers
+accounts-ui
+accounts-password
 
