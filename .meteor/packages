@@ -11,3 +11,4 @@ dburles:collection-helpers
 accounts-ui
 accounts-password
 mizzao:sharejs-ace
+iron:router

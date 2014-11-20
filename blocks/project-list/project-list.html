@@ -1,0 +1,13 @@
+<template name='projectList'>
+  <div class='project-list'>
+    {{#each availableProjects}}
+      {{> projectList__item}}
+    {{/each}}
+  </div>
+</template>
+
+<template name='projectList__item'>
+  <div class='project-list__item'>
+    <a href='{{pathFor 'project'}}'>{{name}}</a>
+  </div>
+</template>
