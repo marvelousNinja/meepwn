@@ -11,6 +11,8 @@ if (Meteor.isClient) {
         'items' : function(node) {
           var tmp = $.jstree.defaults.contextmenu.items();
           delete tmp.create.action;
+          // Cut, Copy, Paste
+          delete tmp.ccp;
           tmp.create.label = 'Create';
           tmp.create.submenu = {
             create_folder: {
@@ -60,18 +62,20 @@ if (Meteor.isClient) {
     $('.filebrowser').on('activate_node.jstree', function(e, data) {
       var node = data.node;
       if (node.type === 'file') {
-        Session.set('currentFile', node.original._id);
+        var file = Files.findOne(new Mongo.ObjectID(node.original.id));
+        Session.set('currentFileId', file._id);
       } else {
-        Session.set('currentDirectory', node.original._id);
+        var directory = Directories.findOne(new Mongo.ObjectID(node.original.id));
+        Session.set('currentDirectoryId', directory._id);
       }
     });
 
     $('.filebrowser').on('delete_node.jstree', function(e, data) {
       var node = data.node;
       if(node.type === 'file') {
-        Files.remove(new Mongo.ObjectID(Session.get('currentFile')));
+        Files.remove(Session.get('currentFileId'));
       } else {
-        Directories.remove(new Mongo.ObjectID(Session.get('currentDirectory')));
+        Directories.remove(Session.get('currentDirectoryId'));
       }
     });
 
@@ -83,12 +87,12 @@ if (Meteor.isClient) {
       if(newNode.type === 'file') {
         Files.insert({
           name: newNode.original.text,
-          parentId: new Mongo.ObjectID(parentNode.original._id)
+          parentId: Session.get('currentDirectoryId')
         });
       } else {
         Directories.insert({
           name: newNode.original.text,
-          parentId: new Mongo.ObjectID(parentNode.original._id)
+          parentId: Session.get('currentDirectoryId')
         });
       }
     });
@@ -96,18 +100,18 @@ if (Meteor.isClient) {
     $('.filebrowser').on('rename_node.jstree', function(e, data) {
       var node = data.node;
       if(node.type === 'file') {
-        Files.update(new Mongo.ObjectID(Session.get('currentFile')), { $set: { name: data.node.text } });
+        Files.update(Session.get('currentFileId'), { $set: { name: data.node.text } });
       } else {
-        Directories.update(new Mongo.ObjectID(Session.get('currentDirectory')), { $set: { name: data.node.text } });
+        Directories.update(Session.get('currentDirectoryId'), { $set: { name: data.node.text } });
       }
     });
 
     var fileNode = function(file) {
-      return $.extend({}, file, {
-        _id: file._id._str,
+      return {
+        id: file._id._str,
         type: 'file',
         text: file.name
-      });
+      };
     }
 
     var directoryNode = function(directory) {
@@ -115,18 +119,22 @@ if (Meteor.isClient) {
       var files = directory.files().map(fileNode);
       var children = directories.concat(files);
 
-      return $.extend({}, directory, {
-        _id: directory._id._str,
+      return {
+        id: directory._id._str,
         type: 'folder',
         text: directory.name,
         children: children
-      });
+      };
     }
 
+    Session.set('currentProjectId', this.data.projectId);
+
     Tracker.autorun(function() {
-      var rootDirectory = Directories.findOne();
-      if(rootDirectory) {
-        $('.filebrowser').jstree(true).settings.core.data = directoryNode(rootDirectory)
+      // TODO: Find a better way
+      var currentProject = Projects.findOne(Session.get('currentProjectId'));
+      if(currentProject) {
+        var rootDirectory = currentProject.rootDirectory();
+        $('.filebrowser').jstree(true).settings.core.data = directoryNode(rootDirectory);
         $('.filebrowser').jstree('refresh');
       }
     });

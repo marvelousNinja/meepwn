@@ -1,9 +1,10 @@
 <template name='editor'>
   <div class='editor'>
     {{#with currentFile}}
-      {{> editor__panel this}}
-      {{> editor__window this}}
+      {{> editor__panel}}
+      {{> editor__window}}
       {{> editor__statusbar}}
     {{/with}}
   </div>
 </template>
+

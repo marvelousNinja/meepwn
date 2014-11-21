@@ -1,13 +1,5 @@
-if (Meteor.isClient) {
-  Session.set('project', '1');
-
-  Template.editor.helpers({
-    currentFile: function() {
-      return Session.get('currentFile');
-    }
-  });
-
-  Template.editor.helpers({
+if(Meteor.isClient) {
+  Template.editor__window.helpers({
     configAce: function() {
       return function(editor) {
         editor.getSession().setMode('ace/mode/javascript');
