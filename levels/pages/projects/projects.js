@@ -16,10 +16,5 @@ Meteor.methods({
 
   deleteProject: function(project) {
     Projects.remove(project);
-  },
-
-  createFile: function(file) {
-    var fileId = Files.insert(file);
-    return fileId;
   }
 });
