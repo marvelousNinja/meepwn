@@ -11,7 +11,7 @@ if(Meteor.isClient) {
         // TODO: Error handling
         if(error) throw new Error(error);
 
-        Router.go('project', { _id: projectId });
+        Router.go('project', { _id: projectId._str });
       });
     }
   });
