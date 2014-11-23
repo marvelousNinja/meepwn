@@ -72,3 +72,11 @@ if(Meteor.isServer) {
     return Meteor.users.find({}, { fields: {'status' : 1 } });
   });
 }
+
+// Workspace
+this.Workspaces = new Meteor.Collection('workspaces');
+if(Meteor.isServer) {
+  Meteor.publish('workspaces', function() {
+    return Workspaces.find();
+  });
+}
