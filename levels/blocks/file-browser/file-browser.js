@@ -1,6 +1,6 @@
 if (Meteor.isClient) {
-  Template.filebrowser.rendered = function() {
-    $('.filebrowser').jstree({
+  Template.fileBrowser.rendered = function() {
+    $('.file-browser').jstree({
       core: {
         animation: 0,
         check_callback: true,
@@ -59,18 +59,18 @@ if (Meteor.isClient) {
       },
     });
 
-    $('.filebrowser').on('activate_node.jstree', function(e, data) {
+    $('.file-browser').on('activate_node.jstree', function(e, data) {
       var node = data.node;
       if (node.type === 'file') {
-        var file = Files.findOne(new Mongo.ObjectID(node.original.id));
+        var file = Files.findOne(node.original.id);
         Session.set('currentFileId', file._id);
       } else {
-        var directory = Directories.findOne(new Mongo.ObjectID(node.original.id));
+        var directory = Directories.findOne(node.original.id);
         Session.set('currentDirectoryId', directory._id);
       }
     });
 
-    $('.filebrowser').on('delete_node.jstree', function(e, data) {
+    $('.file-browser').on('delete_node.jstree', function(e, data) {
       var node = data.node;
       if(node.type === 'file') {
         Files.remove(Session.get('currentFileId'));
@@ -79,7 +79,7 @@ if (Meteor.isClient) {
       }
     });
 
-    $('.filebrowser').on('create_node.jstree', function(e, data) {
+    $('.file-browser').on('create_node.jstree', function(e, data) {
       var newNode = data.node;
       var parentReference = $.jstree.reference(data.parent);
       var parentNode = parentReference.get_node(data.parent);
@@ -97,7 +97,7 @@ if (Meteor.isClient) {
       }
     });
 
-    $('.filebrowser').on('rename_node.jstree', function(e, data) {
+    $('.file-browser').on('rename_node.jstree', function(e, data) {
       var node = data.node;
       if(node.type === 'file') {
         Files.update(Session.get('currentFileId'), { $set: { name: data.node.text } });
@@ -108,7 +108,7 @@ if (Meteor.isClient) {
 
     var fileNode = function(file) {
       return {
-        id: file._id._str,
+        id: file._id,
         type: 'file',
         text: file.name
       };
@@ -120,22 +120,19 @@ if (Meteor.isClient) {
       var children = directories.concat(files);
 
       return {
-        id: directory._id._str,
+        id: directory._id,
         type: 'folder',
         text: directory.name,
         children: children
       };
     }
 
-    Session.set('currentProjectId', this.data.projectId);
-
     Tracker.autorun(function() {
-      // TODO: Find a better way
-      var currentProject = Projects.findOne(Session.get('currentProjectId'));
+      var currentProject = Projects.findOne(Router.current().params._id);
       if(currentProject) {
         var rootDirectory = currentProject.rootDirectory();
-        $('.filebrowser').jstree(true).settings.core.data = directoryNode(rootDirectory);
-        $('.filebrowser').jstree('refresh');
+        $('.file-browser').jstree(true).settings.core.data = directoryNode(rootDirectory);
+        $('.file-browser').jstree('refresh');
       }
     });
   };

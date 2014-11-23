@@ -4,7 +4,6 @@
 # but you can also edit it by hand.
 
 meteor-platform
-autopublish
 insecure
 stylus
 dburles:collection-helpers
@@ -14,4 +13,4 @@ mizzao:sharejs-ace
 iron:router
 alanning:roles
 matb33:collection-hooks
-
+mizzao:user-status

@@ -1,5 +1,10 @@
 // Projects
-this.Projects = new Meteor.Collection('projects', { idGeneration: 'MONGO' });
+this.Projects = new Meteor.Collection('projects');
+if(Meteor.isServer) {
+  Meteor.publish('projects', function() {
+    return Projects.find();
+  });
+}
 
 Projects.helpers({
   rootDirectory: function() {
@@ -27,7 +32,12 @@ Meteor.methods({
 });
 
 // Directories
-this.Directories = new Meteor.Collection('directories', { idGeneration: 'MONGO' });
+this.Directories = new Meteor.Collection('directories');
+if(Meteor.isServer) {
+  Meteor.publish('directories', function() {
+    return Directories.find();
+  });
+}
 
 Directories.helpers({
   files: function() {
@@ -49,4 +59,16 @@ Directories.after.remove(function(userId, directory) {
 });
 
 // Files
-this.Files = new Meteor.Collection('files', { idGeneration: 'MONGO' });
+this.Files = new Meteor.Collection('files');
+if(Meteor.isServer) {
+  Meteor.publish('files', function() {
+    return Files.find();
+  });
+}
+
+// Users
+if(Meteor.isServer) {
+  Meteor.publish('userStatus', function() {
+    return Meteor.users.find({}, { fields: {'status' : 1 } });
+  });
+}
