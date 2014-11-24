@@ -1,0 +1,11 @@
+{
+  "bower": {
+    "jstree": {
+      "version": "~3.0.8",
+      "additionalFiles": [
+        "dist/themes/default/*.png",
+        "dist/themes/default/*.gif"
+      ]
+    }
+  }
+}
