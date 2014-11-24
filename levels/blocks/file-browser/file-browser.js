@@ -62,20 +62,18 @@ if (Meteor.isClient) {
     $('.file-browser').on('activate_node.jstree', function(e, data) {
       var node = data.node;
       if (node.type === 'file') {
-        var file = Files.findOne(node.original.id);
-        Session.set('currentFileId', file._id);
+        Meteor.call('openFile', Router.current().params._id, node.original.id);
       } else {
-        var directory = Directories.findOne(node.original.id);
-        Session.set('currentDirectoryId', directory._id);
+        Meteor.call('openDirectory', Router.current().params._id, node.original.id);
       }
     });
 
     $('.file-browser').on('delete_node.jstree', function(e, data) {
       var node = data.node;
       if(node.type === 'file') {
-        Files.remove(Session.get('currentFileId'));
+        Meteor.call('removeFile', Router.current().params._id, node.original.id);
       } else {
-        Directories.remove(Session.get('currentDirectoryId'));
+        Meteor.call('removeDirectory', Router.current().params._id, node.original.id);
       }
     });
 
@@ -85,14 +83,14 @@ if (Meteor.isClient) {
       var parentNode = parentReference.get_node(data.parent);
 
       if(newNode.type === 'file') {
-        Files.insert({
+        Meteor.call('createFile', {
           name: newNode.original.text,
-          parentId: Session.get('currentDirectoryId')
+          parentId: parentNode.original.id
         });
       } else {
-        Directories.insert({
+        Meteor.call('createDirectory', {
           name: newNode.original.text,
-          parentId: Session.get('currentDirectoryId')
+          parentId: parentNode.original.id
         });
       }
     });
@@ -100,9 +98,9 @@ if (Meteor.isClient) {
     $('.file-browser').on('rename_node.jstree', function(e, data) {
       var node = data.node;
       if(node.type === 'file') {
-        Files.update(Session.get('currentFileId'), { $set: { name: data.node.text } });
+        Meteor.call('renameFile', node.original.id, data.node.text);
       } else {
-        Directories.update(Session.get('currentDirectoryId'), { $set: { name: data.node.text } });
+        Meteor.call('renameDirectory', node.original.id, data.node.text);
       }
     });
 
@@ -121,7 +119,7 @@ if (Meteor.isClient) {
 
       return {
         id: directory._id,
-        type: 'folder',
+        type: 'directory',
         text: directory.name,
         children: children
       };

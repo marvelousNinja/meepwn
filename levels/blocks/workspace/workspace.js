@@ -1,15 +1,12 @@
 if(Meteor.isClient) {
-  Template.editor.helpers({
-    currentFile: function() {
+  Template.workspace.helpers({
+    currentWorkspace: function() {
       if(Meteor.user()) {
         var workspace = Workspaces.findOne({
           userId: Meteor.userId(),
           projectId: Router.current().params._id
         });
-
-        if(workspace) {
-          return Files.findOne(workspace.openedFileId);
-        }
+        return workspace;
       }
     }
   });

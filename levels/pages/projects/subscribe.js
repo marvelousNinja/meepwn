@@ -5,4 +5,3 @@ if(Meteor.isClient) {
   Meteor.subscribe('userStatus');
   Meteor.subscribe('workspaces');
 }
-

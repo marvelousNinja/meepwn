@@ -21,15 +21,6 @@ Projects.after.remove(function(userId, project) {
   Directories.remove(project.rootDirectoryId);
 });
 
-Meteor.methods({
-  createProject: function(project) {
-    var projectId = Projects.insert(project);
-    return projectId;
-  },
-  deleteProject: function(project) {
-    Projects.remove(project);
-  }
-});
 
 // Directories
 this.Directories = new Meteor.Collection('directories');
@@ -72,6 +63,18 @@ if(Meteor.isServer) {
     return Meteor.users.find({}, { fields: {'status' : 1 } });
   });
 }
+
+Meteor.users.helpers({
+  workspaceFor: function(projectId) {
+    var params = { userId: this._id, projectId: projectId };
+    var workspace = Workspaces.findOne(params);
+    if(!workspace) {
+      var id = Workspaces.insert(params);
+      workspace = Workspaces.findOne(id);
+    }
+    return workspace;
+  }
+});
 
 // Workspace
 this.Workspaces = new Meteor.Collection('workspaces');
