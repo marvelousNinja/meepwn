@@ -9,3 +9,8 @@ Meteor.users.helpers({
     return workspace;
   }
 });
+
+// Setting up default roles
+Meteor.users.after.insert(function(userId, user) {
+  Roles.addUsersToRoles(user._id, 'modify', 'projects');
+});
