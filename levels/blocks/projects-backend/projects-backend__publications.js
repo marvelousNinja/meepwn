@@ -1,5 +1,5 @@
 if(Meteor.isServer) {
-  Meteor.publishComposite('projects', {
+  Meteor.publishComposite('projectTrees', {
     find: function() {
       return Meteor.users.find({ _id: this.userId });
     },
@@ -13,7 +13,31 @@ if(Meteor.isServer) {
           });
 
           return Projects.find({ _id: { $in: projectIds } });
-        }
+        },
+        children: [
+          {
+            find: function(project) {
+              return Workspaces.find({ projectId: project._id });
+            }
+          },
+          {
+            find: function(project) {
+              return Directories.find({ _id: project.rootDirectoryId });
+            },
+            children: [
+              {
+                find: function(rootDirectory) {
+                  return Directories.find({ ancestorIds: rootDirectory._id });
+                }
+              },
+              {
+                find: function(rootDirectory) {
+                  return Files.find({ ancestorIds: rootDirectory._id });
+                }
+              }
+            ]
+          }
+        ]
       }
     ]
   });
