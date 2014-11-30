@@ -1,6 +1,6 @@
 if(Meteor.isClient) {
   Template.editor__statusbar.helpers({
-    position: function() {
+    cursorPosition: function() {
       var workspace = Workspaces.findOne(this.workspaceId, {
         fields: { cursorPosition: 1 }
       });
