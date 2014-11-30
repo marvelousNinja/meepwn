@@ -1,5 +1,7 @@
 <template name='project'>
   <div class='project'>
-    {{> workspace}}
+    {{#with projectContext}}
+      {{> workspace}}
+    {{/with}}
   </div>
 </template>

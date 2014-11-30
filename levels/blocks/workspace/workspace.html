@@ -1,7 +1,9 @@
 <template name='workspace'>
   <div class='workspace'>
-    {{> fileBrowser}}
-    {{> editor}}
-    {{> userList}}
+    {{#with workspaceContext}}
+      {{> fileBrowser}}
+      {{> editor}}
+      {{> userList}}
+    {{/with}}
   </div>
 </template>
