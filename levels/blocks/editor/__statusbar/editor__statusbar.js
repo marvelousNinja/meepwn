@@ -6,8 +6,12 @@ if(Meteor.isClient) {
       });
 
       if(workspace) {
-        var position = workspace.cursorPosition.start;
-        return ['Line', position.row + 1, position.column + 1].join(' ');
+        var position = workspace.cursorPosition;
+
+        if(position) {
+          position = position.start;
+          return ['Line', position.row + 1, position.column + 1].join(' ');
+        }
       }
     }
   });
