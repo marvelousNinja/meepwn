@@ -4,9 +4,12 @@ if (Meteor.isClient) {
       core: {
         animation: 0,
         check_callback: true,
-        data: []
+        data: [],
+        themes: {
+          name: 'default-dark'
+        }
       },
-      plugins: [ 'contextmenu', 'dnd', 'search', 'state', 'types', 'wholerow' ],
+      plugins: [ 'themes', 'contextmenu', 'dnd', 'search', 'state', 'types', 'wholerow' ],
       contextmenu: {
         'items' : function(node) {
           var tmp = $.jstree.defaults.contextmenu.items();

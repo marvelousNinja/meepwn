@@ -4,7 +4,10 @@
       "version": "~3.0.8",
       "additionalFiles": [
         "dist/themes/default/*.png",
-        "dist/themes/default/*.gif"
+        "dist/themes/default/*.gif",
+        "dist/themes/default-dark/style.css",
+        "dist/themes/default-dark/*.png",
+        "dist/themes/default-dark/*.gif"
       ]
     }
   }

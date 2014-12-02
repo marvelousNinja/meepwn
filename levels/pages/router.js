@@ -11,8 +11,15 @@ Router.configure({
       if(Meteor.loggingIn()) {
         this.render(this.loadingTemplate);
       } else {
+        Session.set('urlBeforeLoginFailure', this.url);
         Notifications.send('error', 'You need to sign in to access that page');
         this.redirect('/');
+      }
+    } else {
+      var urlBeforeLoginFailure = Session.get('urlBeforeLoginFailure');
+      if(urlBeforeLoginFailure) {
+        delete Session.keys['urlBeforeLoginFailure'];
+        this.redirect(urlBeforeLoginFailure);
       }
     }
 

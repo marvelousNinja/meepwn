@@ -4,6 +4,7 @@ if(Meteor.isClient) {
       var workspaceId = this.workspaceId;
 
       return function(editor) {
+        editor.setTheme('ace/theme/clouds_midnight');
         editor.getSession().setMode('ace/mode/javascript');
         editor.setShowPrintMargin(false);
         editor.getSession().setUseWrapMode(true);
