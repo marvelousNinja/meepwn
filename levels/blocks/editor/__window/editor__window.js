@@ -8,9 +8,15 @@ if(Meteor.isClient) {
         editor.setShowPrintMargin(false);
         editor.getSession().setUseWrapMode(true);
 
+        editor.selection.on('changeCursor', function() {
+          if(editor.focused) {
+            Meteor.call('updateCursor', workspaceId, editor.selection.getCursor());
+          }
+        });
+
         editor.selection.on('changeSelection', function() {
           if(editor.focused) {
-            Meteor.call('updateCursor', workspaceId, editor.selection.toJSON());
+            Meteor.call('updateSelection', workspaceId, editor.selection.toJSON());
           }
         });
 
@@ -31,40 +37,55 @@ if(Meteor.isClient) {
 
   Template.editor__window.rendered = function() {
     var self = this;
+
     var Selection = require('ace/selection').Selection;
+    var Range = require('ace/range').Range;
 
-    var editor = ace.edit('editor');
-    var session = editor.getSession();
-    var workspaceMarkerIds = {};
-
-    window.markers = workspaceMarkerIds;
+    var workspaceSelectionIds = {};
+    var workspaceCursorIds = {};
 
     Tracker.autorun(function() {
+      var editor = ace.edit('editor');
+      var session = editor.getSession();
       var projectId = self.data.projectId;
       var workspaceId = self.data.workspaceId;
 
       var workspaces = Workspaces.find({
         projectId: projectId,
         _id: { $ne: workspaceId },
-      }, { fields: { cursorPosition: 1 } });
+      }, { fields: { selection: 1, cursor: 1 } });
 
       var selection = new Selection(session);
 
       workspaces.forEach(function(workspace) {
-        if (workspace.cursorPosition) {
-
-          var previousMarkerId = workspaceMarkerIds[workspace._id];
+        if (workspace.selection) {
+          var previousMarkerId = workspaceSelectionIds[workspace._id];
           if(previousMarkerId) editor.getSession().removeMarker(previousMarkerId);
 
-          selection.fromJSON(workspace.cursorPosition);
+          selection.fromJSON(workspace.selection);
 
           var range = selection.getRange();
-          // range.$isEmpty = false;
-          // range.isEmpty = function() { return false };
-          // range.clipRows = function() { return this };
-
           var id = editor.getSession().addMarker(range, 'editor__selection', 'line');
-          workspaceMarkerIds[workspace._id] = id;
+          workspaceSelectionIds[workspace._id] = id;
+        }
+
+        if(workspace.cursor) {
+          var previousMarkerId = workspaceCursorIds[workspace._id];
+          if(previousMarkerId) editor.getSession().removeMarker(previousMarkerId);
+
+          // create cursor here
+          var range = Range.fromPoints(workspace.cursor, workspace.cursor);
+
+          // monkey patch it here
+          var origClipRows = range.clipRows;
+          range.clipRows = function() {
+            var result = origClipRows.apply(this, arguments);
+            result.isEmpty = function() { return false };
+            return result;
+          }
+
+          var id = editor.getSession().addMarker(range, 'editor__cursor', 'text');
+          workspaceCursorIds[workspace._id] = id;
         }
       });
     });
