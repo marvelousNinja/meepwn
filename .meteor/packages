@@ -6,7 +6,6 @@
 meteor-platform
 stylus
 dburles:collection-helpers
-accounts-ui
 accounts-password
 mizzao:sharejs-ace
 iron:router
@@ -16,3 +15,8 @@ mizzao:user-status
 mquandalle:bower
 reywood:publish-composite
 xorax:multiple-callbacks
+accounts-google
+accounts-twitter
+accounts-github
+service-configuration
+accounts-ui

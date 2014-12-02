@@ -1,0 +1,14 @@
+{
+  "github": {
+    "clientId": "xxxx",
+    "secret": "xxxx"
+  },
+  "google": {
+    "clientId": "xxxx",
+    "secret": "xxxx"
+  },
+  "twitter": {
+    "consumerKey": "xxxx",
+    "secret": "xxxx"
+  }
+}
