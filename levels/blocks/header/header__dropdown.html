@@ -1,0 +1,9 @@
+<template name='header__dropdown'>
+  {{#each services}}
+    {{#unless isPasswordService}}
+      {{> _loginButtonsLoggedOutSingleLoginButton}}
+    {{/unless}}
+  {{/each}}
+
+  {{> _loginButtonsMessages}}
+</template>
