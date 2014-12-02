@@ -19,7 +19,14 @@ if(Meteor.isServer) {
           {
             find: function(project) {
               return Workspaces.find({ projectId: project._id });
-            }
+            },
+            children: [
+              {
+                find: function(workspace) {
+                  return Meteor.users.find({ _id: { $ne: this.userId, $in: [workspace.userId] } });
+                }
+              }
+            ]
           },
           {
             find: function(project) {
