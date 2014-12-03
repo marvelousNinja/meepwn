@@ -33,6 +33,10 @@ if(Meteor.isClient) {
           editor.focused = false;
         });
       };
+    },
+    fileExists: function() {
+      var workspace = Workspaces.findOne({ _id: this.workspaceId});
+      return Files.findOne({ _id: workspace.openedFileId });
     }
   });
 

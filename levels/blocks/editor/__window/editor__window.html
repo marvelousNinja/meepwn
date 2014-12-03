@@ -1,5 +1,7 @@
 <template name='editor__window'>
   <div class='editor__window'>
-    {{> sharejsAce docid=fileId onRender=configAce id='editor'}}
+    {{#if fileExists}}
+      {{> sharejsAce docid=fileId onRender=configAce id='editor'}}
+    {{/if}}
   </div>
 </template>
