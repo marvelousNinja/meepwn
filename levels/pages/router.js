@@ -27,10 +27,43 @@ Router.configure({
   }
 });
 
+var handleError = function(error) {
+  Notifications.send('error', error.toString());
+  Router.go('dashboard');
+}
+
+var waitForSignIn = function() {
+  if(Meteor.userId()) this.next();
+}
+
 Router.map(function() {
   this.route('index', { path: '/' });
   this.route('dashboard', { path: '/dashboard' });
-  this.route('project', { path: '/dashboard/projects/:_id' });
-  this.route('invite', { path: '/dashboard/projects/:_id/invite' });
-  this.route('accept', { path: '/invites/:_id/accept' });
+  this.route('invite', { path: '/dashboard/projects/:_id/invitations/new' });
+
+  this.route('project', {
+    path: '/dashboard/projects/:_id',
+    before: waitForSignIn,
+    action: function() {
+      var project = Projects.findOne(this.params._id);
+      if(!project) handleError(new Meteor.Error(404, 'Project was not found'));
+      this.render('project');
+    }
+  });
+
+  this.route('accept', {
+    path: '/invitations/:_id/accept',
+    before: waitForSignIn,
+    action: function() {
+      Meteor.call('acceptInvitation', { invitationId: this.params._id }, function(error, projectId) {
+        if(error) {
+          handleError(error);
+        } else {
+          Notifications.send('notice', 'You have accepted the invitation');
+          Router.go('project', { _id: projectId});
+        }
+      });
+      this.stop();
+    }
+  });
 });

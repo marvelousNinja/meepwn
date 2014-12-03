@@ -5,8 +5,6 @@ if(Meteor.isClient) {
         fields: { cursor: 1 }
       });
 
-      console.log(this.workspaceId);
-
       if(workspace) {
         var position = workspace.cursor;
 

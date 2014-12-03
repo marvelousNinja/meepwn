@@ -17,8 +17,7 @@ if(Meteor.isServer) {
             return role.split('-')[1];
           });
 
-          // TODO: Publishing all for now, until I'll implement invitation mechanism
-          return Projects.find();//{ _id: { $in: projectIds } });
+          return Projects.find({ _id: { $in: projectIds } });
         },
         children: [
           {
