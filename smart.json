@@ -9,6 +9,7 @@
         "dist/themes/default-dark/*.png",
         "dist/themes/default-dark/*.gif"
       ]
-    }
+    },
+    "veinjs": "master"
   }
 }

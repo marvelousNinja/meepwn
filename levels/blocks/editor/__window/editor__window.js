@@ -54,7 +54,7 @@ if(Meteor.isClient) {
       var workspaces = Workspaces.find({
         projectId: projectId,
         _id: { $ne: workspaceId },
-      }, { fields: { selection: 1, cursor: 1 } });
+      }, { fields: { selection: 1, cursor: 1 , userId: 1 } });
 
       var selection = new Selection(session);
 
@@ -65,8 +65,9 @@ if(Meteor.isClient) {
 
           selection.fromJSON(workspace.selection);
 
+          var klass = 'editor__selection ' + 'user_' + workspace.userId;
           var range = selection.getRange();
-          var id = editor.getSession().addMarker(range, 'editor__selection', 'line');
+          var id = editor.getSession().addMarker(range, klass, 'line');
           workspaceSelectionIds[workspace._id] = id;
         }
 
@@ -85,7 +86,8 @@ if(Meteor.isClient) {
             return result;
           }
 
-          var id = editor.getSession().addMarker(range, 'editor__cursor', 'text');
+          var klass = 'editor__selection ' + 'user_' + workspace.userId;
+          var id = editor.getSession().addMarker(range, klass, 'text');
           workspaceCursorIds[workspace._id] = id;
         }
       });
