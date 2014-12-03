@@ -1,13 +1,15 @@
 if(Meteor.isClient) {
-  Template.editor__panel.helpers({
-    openedFiles: function() {
+  Template.editor__tab.helpers({
+    isActive: function() {
       var workspace = Workspaces.findOne({
         userId: Meteor.userId(),
         projectId: Router.current().params._id
       });
 
       if(workspace) {
-        return Files.find({ _id: { $in: workspace.tabbedFileIds } });
+        if(workspace.openedFileId === this._id) {
+          return 'editor__tab_active';
+        }
       }
     }
   });

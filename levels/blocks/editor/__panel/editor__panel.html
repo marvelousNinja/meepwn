@@ -1,5 +1,7 @@
 <template name='editor__panel'>
   <div class='editor__panel'>
-    {{fileName}}
+    {{#each openedFiles}}
+      {{> editor__tab}}
+    {{/each}}
   </div>
 </template>

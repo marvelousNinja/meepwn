@@ -7,7 +7,24 @@ Meteor.methods({
       workspace = Workspaces.findOne(id);
     }
 
-    return Workspaces.update(workspace._id, { $set: { openedFileId: fileId } });
+    // TODO: Do not insert duplicates
+    return Workspaces.update(workspace._id, {
+      $set: { openedFileId: fileId },
+      $push: { tabbedFileIds: fileId }
+    });
+  },
+  closeFile: function(projectId, fileId) {
+    var params = { userId: Meteor.userId(), projectId: projectId };
+    var workspace = Workspaces.findOne(params);
+    if(!workspace) {
+      var id = Workspaces.insert(params);
+      workspace = Workspaces.findOne(id);
+    }
+
+    return Workspaces.update(workspace._id, {
+      $unset: { openedFileId: '' },
+      $pull: { tabbedFileIds: fileId }
+    });
   },
   createFile: function(params) {
     return Files.insert(params);
