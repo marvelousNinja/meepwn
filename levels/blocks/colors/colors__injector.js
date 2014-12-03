@@ -10,7 +10,7 @@ if(Meteor.isClient) {
       if(typeof vein !== 'undefined') {
         vein.inject('.user_' + user._id, {
           'background-color': colorFromStr(user._id),
-          'border-left': '2px solid white'
+          'border-left': '2px solid ' + colorFromStr(user._id)
         });
       }
     });
