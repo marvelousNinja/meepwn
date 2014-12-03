@@ -6,6 +6,11 @@ if(Meteor.isServer) {
     children: [
       {
         find: function(user) {
+          return Invitations.find({ userId: user._id });
+        }
+      },
+      {
+        find: function(user) {
           var projectIds = user.roles.projects.filter(function(role) {
             return role.indexOf('read-') === 0;
           }).map(function(role) {

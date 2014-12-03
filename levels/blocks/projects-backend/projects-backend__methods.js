@@ -13,6 +13,7 @@ Meteor.methods({
     // Setting up authorization for future calls
     Roles.addUsersToRoles(user._id, 'modify-' + projectId, 'projects');
     Roles.addUsersToRoles(user._id, 'read-' + projectId, 'projects');
+    Roles.addUsersToRoles(user._id, 'invite-' + projectId, 'projects');
     return projectId;
   },
   deleteProject: function(project) {

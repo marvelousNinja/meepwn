@@ -7,7 +7,10 @@ if(Meteor.isClient) {
 
   Tracker.autorun(function() {
     Meteor.users.find().forEach(function(user) {
-      vein.inject('.user_' + user._id, { 'background-color': colorFromStr(user._id)});
+      vein.inject('.user_' + user._id, {
+        'background-color': colorFromStr(user._id),
+        'border-left': '2px solid white'
+      });
     });
   });
 }

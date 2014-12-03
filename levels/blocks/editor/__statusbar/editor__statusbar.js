@@ -2,15 +2,19 @@ if(Meteor.isClient) {
   Template.editor__statusbar.helpers({
     cursorPosition: function() {
       var workspace = Workspaces.findOne(this.workspaceId, {
-        fields: { cursorPosition: 1 }
+        fields: { cursor: 1 }
       });
 
+      console.log(this.workspaceId);
+
       if(workspace) {
-        var position = workspace.cursorPosition;
+        var position = workspace.cursor;
 
         if(position) {
-          position = position.start;
-          return ['Line', position.row + 1, position.column + 1].join(' ');
+          return [
+            'Line:', position.row + 1,
+            'Column:', position.column + 1
+          ].join(' ');
         }
       }
     }

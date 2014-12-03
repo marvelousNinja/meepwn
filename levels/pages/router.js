@@ -31,4 +31,6 @@ Router.map(function() {
   this.route('index', { path: '/' });
   this.route('dashboard', { path: '/dashboard' });
   this.route('project', { path: '/dashboard/projects/:_id' });
+  this.route('invite', { path: '/dashboard/projects/:_id/invite' });
+  this.route('accept', { path: '/invites/:_id/accept' });
 });
