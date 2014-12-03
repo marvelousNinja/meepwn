@@ -1,5 +1,10 @@
 <template name='header__links'>
   <div class='header__links'>
-    <a href='{{pathFor 'dashboard'}}'>Back to project list</a>
+    {{#if currentUser}}
+      <a href='{{pathFor 'dashboard'}}'>Dashboard</a>
+    {{/if}}
+    {{#with currentProject}}
+      <a href='{{pathFor 'invite'}}'>Invite to project</a>
+    {{/with}}
   </div>
 </template>
