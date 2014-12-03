@@ -10,7 +10,7 @@ Staging Deployment:
 -------------------
 http://meepwn.meteor.com/
 
-What is implemented?
+What Is Implemented?
 --------------------
 * Sign-In/Sign-Out through 3rd party services (GitHub, Google, Twitter).
 * Creation of projects. Projects are private and belong to the user by default.
@@ -22,3 +22,15 @@ What is implemented?
 * Concept of workspace was introduced. After navigating to the project page, user should automatically reopen previous files.
 * And more!
 
+Tech Behind:
+------------
+* Written from scratch using Meteor
+* DB choice comes with Meteor too - Mongo
+* Deployment using internal Meteor tool (```meteor deploy```)
+* Handlebars as HTML template engine
+* Stylus
+* Underscore and jQuery as client-side libs
+* ShareJS and Ace Editor combo
+* Integration with Bower
+* Internal Meteor packaging system (instead of ```npm``` and etc)
+* Build tasks (compiling, source maps, minification) are carried out automatically by Meteor using strict conventions
