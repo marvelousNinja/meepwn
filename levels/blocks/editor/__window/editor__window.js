@@ -35,8 +35,10 @@ if(Meteor.isClient) {
       };
     },
     fileExists: function() {
-      var workspace = Workspaces.findOne({ _id: this.workspaceId});
-      return Files.findOne({ _id: workspace.openedFileId });
+      var workspace = Workspaces.findOne({ _id: this.workspaceId });
+      if(workspace) {
+        return Files.findOne({ _id: workspace.openedFileId });
+      }
     }
   });
 

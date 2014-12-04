@@ -24,6 +24,9 @@ Router.configure({
     }
 
     return this.next();
+  },
+  waitOn: function() {
+    return Meteor.subscribe('projectTrees');
   }
 });
 
