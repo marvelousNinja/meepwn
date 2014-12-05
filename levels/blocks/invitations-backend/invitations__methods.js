@@ -23,22 +23,20 @@ Meteor.methods({
     return invitationId;
   },
   acceptInvitation: function(params) {
-    if(!this.isSimulation) {
-      // Authorization
-      var userId = Meteor.userId();
-      if(!userId) throw new Meteor.Error(403, 'Not Authorized');
+    // Authorization
+    var userId = Meteor.userId();
+    if(!userId) throw new Meteor.Error(403, 'Not Authorized');
 
-      // Method 'meat'
-      var invitation = Invitations.findOne({ _id: params.invitationId });
-      if(invitation) {
-        for(resource in invitation.roles) {
-          Roles.addUsersToRoles(userId, invitation.roles[resource], resource);
-        }
-        Invitations.remove(invitation);
-        return invitation.projectId;
-      } else {
-        throw new Meteor.Error(404, 'Invitation not found');
+    // Method 'meat'
+    var invitation = Invitations.findOne({ _id: params.invitationId });
+    if(invitation) {
+      for(resource in invitation.roles) {
+        Roles.addUsersToRoles(userId, invitation.roles[resource], resource);
       }
+      Invitations.remove(invitation);
+      return invitation.projectId;
+    } else {
+      throw new Meteor.Error(404, 'Invitation not found');
     }
   }
 });

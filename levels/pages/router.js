@@ -19,7 +19,7 @@ Router.configure({
 
     if(!userId) {
       Session.set('urlBeforeLoginFailure', this.url);
-      this.handleError(new Meteor.Error(403, 'You need to sign in to access that page'));
+      return this.handleError(new Meteor.Error(403, 'You need to sign in to access that page'));
     } else {
       this.next();
     }
@@ -42,7 +42,7 @@ Router.map(function() {
     path: '/dashboard/projects/:_id',
     action: function() {
       var project = Projects.findOne(this.params._id);
-      if(!project) this.handleError(new Meteor.Error(404, 'Project was not found'));
+      if(!project) return this.handleError(new Meteor.Error(404, 'Project was not found'));
       this.render('projectsShow');
     }
   });
@@ -54,12 +54,13 @@ Router.map(function() {
   this.route('invitationsAccept', {
     path: '/invitations/:_id/accept',
     action: function() {
+      var self = this;
       Meteor.call('acceptInvitation', { invitationId: this.params._id }, function(error, projectId) {
-        if(error) this.handleError(error);
+        if(error) return self.handleError(error);
         Notifications.send('notice', 'You have accepted the invitation');
         Router.go('projectsShow', { _id: projectId });
       });
-      //this.stop();
+      this.stop();
     }
   });
 });
