@@ -1,43 +1,33 @@
+RouteController.prototype.handleError = function(error) {
+  Notifications.send('error', error.toString());
+  Router.go(Meteor.userId() ? 'dashboardShow' : 'index');
+  this.stop();
+}
+
 Router.configure({
   layoutTemplate: 'layout',
   onBeforeAction: function() {
-    var availableWithoutLogin = ['index'];
-    if(_.include(availableWithoutLogin, this.route.getName())) {
-      return this.next();
+    var userId = Meteor.userId();
+
+    var previousUrl = Session.get('urlBeforeLoginFailure');
+    if(userId && previousUrl) {
+      delete Session.keys['urlBeforeLoginFailure'];
+      return this.redirect(previousUrl);
     }
 
-    var user = Meteor.user();
-    if(!user) {
-      if(Meteor.loggingIn()) {
-        this.render(this.loadingTemplate);
-      } else {
-        Session.set('urlBeforeLoginFailure', this.url);
-        Notifications.send('error', 'You need to sign in to access that page');
-        this.redirect('/');
-      }
+    if(this.route.getName() === 'index') return this.next();
+
+    if(!userId) {
+      Session.set('urlBeforeLoginFailure', this.url);
+      this.handleError(new Meteor.Error(403, 'You need to sign in to access that page'));
     } else {
-      var urlBeforeLoginFailure = Session.get('urlBeforeLoginFailure');
-      if(urlBeforeLoginFailure) {
-        delete Session.keys['urlBeforeLoginFailure'];
-        this.redirect(urlBeforeLoginFailure);
-      }
+      this.next();
     }
-
-    return this.next();
   },
   waitOn: function() {
     return Meteor.subscribe('projectTrees');
   }
 });
-
-var handleError = function(error) {
-  Notifications.send('error', error.toString());
-  Router.go('dashboardShow');
-}
-
-var waitForSignIn = function() {
-  if(Meteor.userId()) this.next();
-}
 
 Router.map(function() {
   this.route('index', {
@@ -45,38 +35,31 @@ Router.map(function() {
   });
 
   this.route('dashboardShow', {
-    path: '/dashboard',
-    before: waitForSignIn
+    path: '/dashboard'
   });
 
   this.route('projectsShow', {
     path: '/dashboard/projects/:_id',
-    before: waitForSignIn,
     action: function() {
       var project = Projects.findOne(this.params._id);
-      if(!project) handleError(new Meteor.Error(404, 'Project was not found'));
+      if(!project) this.handleError(new Meteor.Error(404, 'Project was not found'));
       this.render('projectsShow');
     }
   });
 
   this.route('invitationsNew', {
     path: '/dashboard/projects/:_id/invitations/new',
-    before: waitForSignIn
   });
 
   this.route('invitationsAccept', {
     path: '/invitations/:_id/accept',
-    before: waitForSignIn,
     action: function() {
       Meteor.call('acceptInvitation', { invitationId: this.params._id }, function(error, projectId) {
-        if(error) {
-          handleError(error);
-        } else {
-          Notifications.send('notice', 'You have accepted the invitation');
-          Router.go('projectsShow', { _id: projectId });
-        }
+        if(error) this.handleError(error);
+        Notifications.send('notice', 'You have accepted the invitation');
+        Router.go('projectsShow', { _id: projectId });
       });
-      this.stop();
+      //this.stop();
     }
   });
 });
