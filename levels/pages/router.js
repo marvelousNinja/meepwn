@@ -32,7 +32,7 @@ Router.configure({
 
 var handleError = function(error) {
   Notifications.send('error', error.toString());
-  Router.go('dashboard');
+  Router.go('dashboardShow');
 }
 
 var waitForSignIn = function() {
@@ -40,21 +40,31 @@ var waitForSignIn = function() {
 }
 
 Router.map(function() {
-  this.route('index', { path: '/' });
-  this.route('dashboard', { path: '/dashboard' });
-  this.route('invite', { path: '/dashboard/projects/:_id/invitations/new' });
+  this.route('index', {
+    path: '/'
+  });
 
-  this.route('project', {
+  this.route('dashboardShow', {
+    path: '/dashboard',
+    before: waitForSignIn
+  });
+
+  this.route('projectsShow', {
     path: '/dashboard/projects/:_id',
     before: waitForSignIn,
     action: function() {
       var project = Projects.findOne(this.params._id);
       if(!project) handleError(new Meteor.Error(404, 'Project was not found'));
-      this.render('project');
+      this.render('projectsShow');
     }
   });
 
-  this.route('accept', {
+  this.route('invitationsNew', {
+    path: '/dashboard/projects/:_id/invitations/new',
+    before: waitForSignIn
+  });
+
+  this.route('invitationsAccept', {
     path: '/invitations/:_id/accept',
     before: waitForSignIn,
     action: function() {
@@ -63,7 +73,7 @@ Router.map(function() {
           handleError(error);
         } else {
           Notifications.send('notice', 'You have accepted the invitation');
-          Router.go('project', { _id: projectId});
+          Router.go('projectsShow', { _id: projectId });
         }
       });
       this.stop();
