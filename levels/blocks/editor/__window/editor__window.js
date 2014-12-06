@@ -32,6 +32,8 @@ if(Meteor.isClient) {
         editor.on('blur', function() {
           editor.focused = false;
         });
+
+        editor.setReadOnly(true);
       };
     }
   });

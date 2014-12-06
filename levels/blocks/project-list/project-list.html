@@ -1,14 +1,9 @@
 <template name='projectList'>
   <div class='project-list'>
-    {{#each availableProjects}}
-      {{> projectList__item}}
-    {{/each}}
-  </div>
-</template>
-
-<template name='projectList__item'>
-  <div class='project-list__item'>
-    <a href='{{pathFor 'projectsShow'}}'>{{name}}</a>
-    <button class='project-list__delete'>Delete</button>
+    {{#if availableProjects}}
+      {{#each availableProjects}}
+        {{> projectList__item}}
+      {{/each}}
+    {{/if}}
   </div>
 </template>

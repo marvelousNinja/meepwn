@@ -30,8 +30,11 @@ Tech Behind:
 * Deployment using internal Meteor tool (```meteor deploy```)
 * Handlebars as HTML template engine
 * Stylus
+* Prefix-free as alternative to autoprefixer.
+* Layout through flex-box mostly
 * Underscore and jQuery as client-side libs
 * ShareJS and Ace Editor combo
 * Integration with Bower
 * Internal Meteor packaging system (instead of ```npm``` and etc)
 * Build tasks (compiling, source maps, minification) are carried out automatically by Meteor using strict conventions
+
