@@ -31,5 +31,22 @@ Meteor.methods({
 
     Invitations.remove({ _id: invitation._id });
     return invitation.projectId;
+  },
+  deleteInvitation: function(invitationId) {
+    var user = Meteor.user();
+    if(!user) throw new Meteor.Error(403, 'Not authorized');
+
+    var invitation = Invitations.findOne({ _id: invitationId });
+    if(!invitation) throw new Meteor.Error(404, 'Invitation not found');
+
+    var project = Projects.findOne({ _id: invitation.projectId });
+    if(!project) throw new Meteor.Error(404, 'Project not found');
+
+    if(!Permissions.can(user, 'invite', project)) {
+      throw new Meteor.Error(403, 'Not authorized');
+    }
+
+    Invitations.remove({ _id: invitation._id });
+    return invitation.projectId;
   }
 });

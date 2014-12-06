@@ -1,5 +1,7 @@
 <template name='invitationList__item'>
   <div class='invitation-list__item'>
-    {{urlFor 'invitationsAccept'}}
+    {{> invitationList__copyField}}
+    {{> invitationList__permissions}}
+    {{> invitationList__revoke}}
   </div>
 </template>

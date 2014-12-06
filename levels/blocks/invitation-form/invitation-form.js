@@ -4,13 +4,14 @@ if(Meteor.isClient) {
       e.preventDefault();
 
       var params = {
-        permissions: $(e.target).find('[name=permissions]').val().split('-'),
+        permissions: $(e.target).find('[name=permissions]:checked').val().split('-'),
         projectId: Router.current().params._id
       }
 
+      console.log(params);
+
       Meteor.call('createInvitation', params, function(error, invitationId) {
-        // TODO: Error handling
-        if(error) throw new Error(error);
+        if(error) Router.current().handleError(error);
       });
     }
   });
