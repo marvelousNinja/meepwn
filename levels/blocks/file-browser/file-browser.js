@@ -1,4 +1,16 @@
 if (Meteor.isClient) {
+  var createFolder = function (data) {
+    var inst = $.jstree.reference(data.reference);
+    var obj = inst.get_node(data.reference);
+    inst.create_node(obj, { type : 'directory' }, 'last');
+  }
+
+  var createFile = function (data) {
+    var inst = $.jstree.reference(data.reference);
+    var obj = inst.get_node(data.reference);
+    inst.create_node(obj, { type : 'file' }, 'last');
+  }
+
   Template.fileBrowser.rendered = function() {
     $('.file-browser').jstree({
       core: {
@@ -12,131 +24,33 @@ if (Meteor.isClient) {
       plugins: [ 'themes', 'contextmenu', 'dnd', 'search', 'state', 'types', 'wholerow' ],
       contextmenu: {
         'items' : function(node) {
-          var tmp = $.jstree.defaults.contextmenu.items();
-          delete tmp.create.action;
-          // Cut, Copy, Paste
-          delete tmp.ccp;
-          tmp.create.label = 'Create';
-          tmp.create.submenu = {
-            create_folder: {
-              separator_after: true,
-              label: 'Folder',
-              action: function (data) {
-                var inst = $.jstree.reference(data.reference);
-                var obj = inst.get_node(data.reference);
-                inst.create_node(obj, { type : 'directory' }, 'last', function (new_node) {
-                  setTimeout(function () { inst.edit(new_node); },0);
-                });
-              }
-            },
-            create_file: {
-              label: 'File',
-              action: function (data) {
-                var inst = $.jstree.reference(data.reference);
-                var obj = inst.get_node(data.reference);
-                inst.create_node(obj, { type : 'file'}, 'last', function (new_node) {
-                  setTimeout(function () { inst.edit(new_node); },0);
-                });
-              }
-            }
-          };
-          if(this.get_type(node) === 'file') {
-            delete tmp.create;
-          }
+          var menuItems = $.jstree.defaults.contextmenu.items();
+          delete menuItems.create.action;
+          delete menuItems.ccp;
 
-          if(this.get_type(node) === 'root') {
-            delete tmp.remove;
-          }
-          return tmp;
+          menuItems.create.label = 'Create';
+          menuItems.create.submenu = {
+            createFolder: { label: 'Folder', action: createFolder },
+            createFile: { label: 'File', action: createFile }
+          };
+          if(this.get_type(node) === 'file') delete menuItems.create;
+          if(this.get_type(node) === 'root') delete menuItems.remove;
+          return menuItems;
         }
       },
-      'types' : {
-        'root' : { 'icon': 'jstree-folder' },
-        'directory' : { 'icon' : 'jstree-folder' },
-        'file' : { 'valid_children' : [], 'icon' : 'jstree-file' }
+      types : {
+        root : { icon: 'jstree-folder' },
+        directory : { icon : 'jstree-folder' },
+        file : { valid_children : [], icon : 'jstree-file' }
       },
-      'unique' : {
-        'duplicate' : function (name, counter) {
+      unique : {
+        duplicate : function (name, counter) {
           return name + ' ' + counter;
         }
       },
     });
 
-    $('.file-browser').on('activate_node.jstree', function(e, data) {
-      var node = data.node;
-      if (node.type === 'file') {
-        Meteor.call('openFile', Router.current().params._id, node.original.id);
-      } else {
-        Meteor.call('openDirectory', Router.current().params._id, node.original.id);
-      }
-    });
-
-    $('.file-browser').on('delete_node.jstree', function(e, data) {
-      var node = data.node;
-      if(node.type === 'file') {
-        Meteor.call('removeFile', node.original.id);
-      } else {
-        Meteor.call('removeDirectory', node.original.id);
-      }
-    });
-
-    $('.file-browser').on('create_node.jstree', function(e, data) {
-      var newNode = data.node;
-      var parentReference = $.jstree.reference(data.parent);
-      var parentNode = parentReference.get_node(data.parent);
-
-      if(newNode.type === 'file') {
-        Meteor.call('createFile', {
-          name: newNode.original.text,
-          parentId: parentNode.original.id,
-          projectId: Router.current().params._id
-        });
-      } else {
-        Meteor.call('createDirectory', {
-          name: newNode.original.text,
-          parentId: parentNode.original.id,
-          projectId: Router.current().params._id
-        });
-      }
-    });
-
-    $('.file-browser').on('rename_node.jstree', function(e, data) {
-      var node = data.node;
-      if(node.type === 'file') {
-        Meteor.call('renameFile', node.original.id, data.node.text);
-      } else {
-        Meteor.call('renameDirectory', node.original.id, data.node.text);
-      }
-    });
-
-    var fileNode = function(file) {
-      return {
-        id: file._id,
-        type: 'file',
-        text: file.name,
-        parent: file.parentId
-      };
-    }
-
-    var directoryNode = function(directory) {
-      return {
-        id: directory._id,
-        type: directory.parentId ? 'directory' : 'root',
-        text: directory.name,
-        parent: directory.parentId ? directory.parentId : '#'
-      };
-    }
-
-    Tracker.autorun(function() {
-      var currentProject = Projects.findOne(Router.current().params._id);
-
-      if(currentProject) {
-        var directories = Directories.find({ projectId: currentProject._id }).map(directoryNode);
-        var files = Files.find({ projectId: currentProject._id }).map(fileNode);
-
-        $('.file-browser').jstree(true).settings.core.data = directories.concat(files);
-        $('.file-browser').jstree('refresh');
-      }
-    });
+    FileBrowser__events.setup();
+    FileBrowser__refresher.autotrack();
   };
 }

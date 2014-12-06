@@ -43,6 +43,7 @@ Router.map(function() {
     action: function() {
       var project = Projects.findOne(this.params._id);
       if(!project) return this.handleError(new Meteor.Error(404, 'Project not found'));
+      Session.set('projectId', this.params._id);
       this.render('projectsShow');
     }
   });

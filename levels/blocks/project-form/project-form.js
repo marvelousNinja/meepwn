@@ -8,9 +8,7 @@ if(Meteor.isClient) {
       }
 
       Meteor.call('createProject', params, function(error, projectId) {
-        // TODO: Error handling
-        if(error) throw new Error(error);
-
+        if(error) Router.current().handleError(error);
         Router.go('projectsShow', { _id: projectId });
       });
     }

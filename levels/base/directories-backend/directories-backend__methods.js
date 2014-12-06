@@ -37,7 +37,7 @@ Meteor.methods({
     return Directories.remove({ _id: directory._id });
   },
   renameDirectory: function(directoryId, name) {
-    var directory = Directories.findOne({ _id: fileId });
+    var directory = Directories.findOne({ _id: directoryId });
     if(!directory) throw Meteor.Error(404, 'File not found');
 
     var project = Projects.findOne({ _id: directory.projectId });

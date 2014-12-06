@@ -3,8 +3,8 @@
     {{#if currentUser}}
       <a href='{{pathFor 'dashboardShow'}}'>Dashboard</a>
     {{/if}}
-    {{#with currentProject}}
-      <a href='{{pathFor 'invitationsNew'}}'>Invite to project</a>
+    {{#with projectId}}
+      <a href='{{pathFor 'invitationsNew' _id=this}}'>Invite to project</a>
     {{/with}}
   </div>
 </template>

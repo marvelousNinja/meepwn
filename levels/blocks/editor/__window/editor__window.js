@@ -1,7 +1,7 @@
 if(Meteor.isClient) {
   Template.editor__window.helpers({
     configAce: function() {
-      var workspaceId = this.workspaceId;
+      var workspaceId = Session.workspaceId();
 
       return function(editor) {
         editor.setTheme('ace/theme/clouds_midnight');
@@ -33,12 +33,6 @@ if(Meteor.isClient) {
           editor.focused = false;
         });
       };
-    },
-    fileExists: function() {
-      var workspace = Workspaces.findOne({ _id: this.workspaceId });
-      if(workspace) {
-        return Files.findOne({ _id: workspace.openedFileId });
-      }
     }
   });
 
@@ -54,8 +48,8 @@ if(Meteor.isClient) {
     Tracker.autorun(function() {
       var editor = ace.edit('editor');
       var session = editor.getSession();
-      var projectId = self.data.projectId;
-      var workspaceId = self.data.workspaceId;
+      var projectId = Session.projectId();
+      var workspaceId = Session.workspaceId();
 
       var workspaces = Workspaces.find({
         projectId: projectId,
