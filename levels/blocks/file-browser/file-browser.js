@@ -74,9 +74,9 @@ if (Meteor.isClient) {
     $('.file-browser').on('delete_node.jstree', function(e, data) {
       var node = data.node;
       if(node.type === 'file') {
-        Meteor.call('removeFile', Router.current().params._id, node.original.id);
+        Meteor.call('removeFile', node.original.id);
       } else {
-        Meteor.call('removeDirectory', Router.current().params._id, node.original.id);
+        Meteor.call('removeDirectory', node.original.id);
       }
     });
 
@@ -88,12 +88,14 @@ if (Meteor.isClient) {
       if(newNode.type === 'file') {
         Meteor.call('createFile', {
           name: newNode.original.text,
-          parentId: parentNode.original.id
+          parentId: parentNode.original.id,
+          projectId: Router.current().params._id
         });
       } else {
         Meteor.call('createDirectory', {
           name: newNode.original.text,
-          parentId: parentNode.original.id
+          parentId: parentNode.original.id,
+          projectId: Router.current().params._id
         });
       }
     });
@@ -111,28 +113,28 @@ if (Meteor.isClient) {
       return {
         id: file._id,
         type: 'file',
-        text: file.name
+        text: file.name,
+        parent: file.parentId
       };
     }
 
     var directoryNode = function(directory) {
-      var directories = directory.directories().map(directoryNode);
-      var files = directory.files().map(fileNode);
-      var children = directories.concat(files);
-
       return {
         id: directory._id,
-        type: 'directory',
+        type: directory.parentId ? 'directory' : 'root',
         text: directory.name,
-        children: children
+        parent: directory.parentId ? directory.parentId : '#'
       };
     }
 
     Tracker.autorun(function() {
       var currentProject = Projects.findOne(Router.current().params._id);
+
       if(currentProject) {
-        var rootDirectory = currentProject.rootDirectory();
-        $('.file-browser').jstree(true).settings.core.data = directoryNode(rootDirectory);
+        var directories = Directories.find({ projectId: currentProject._id }).map(directoryNode);
+        var files = Files.find({ projectId: currentProject._id }).map(fileNode);
+
+        $('.file-browser').jstree(true).settings.core.data = directories.concat(files);
         $('.file-browser').jstree('refresh');
       }
     });

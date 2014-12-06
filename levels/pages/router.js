@@ -42,7 +42,7 @@ Router.map(function() {
     path: '/dashboard/projects/:_id',
     action: function() {
       var project = Projects.findOne(this.params._id);
-      if(!project) return this.handleError(new Meteor.Error(404, 'Project was not found'));
+      if(!project) return this.handleError(new Meteor.Error(404, 'Project not found'));
       this.render('projectsShow');
     }
   });
@@ -55,7 +55,7 @@ Router.map(function() {
     path: '/invitations/:_id/accept',
     action: function() {
       var self = this;
-      Meteor.call('acceptInvitation', { invitationId: this.params._id }, function(error, projectId) {
+      Meteor.call('acceptInvitation', this.params._id, function(error, projectId) {
         if(error) return self.handleError(error);
         Notifications.send('notice', 'You have accepted the invitation');
         Router.go('projectsShow', { _id: projectId });

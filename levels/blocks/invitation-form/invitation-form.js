@@ -4,7 +4,7 @@ if(Meteor.isClient) {
       e.preventDefault();
 
       var params = {
-        permissions: $(e.target).find('[name=permissions]').val(),
+        permissions: $(e.target).find('[name=permissions]').val().split('-'),
         projectId: Router.current().params._id
       }
 

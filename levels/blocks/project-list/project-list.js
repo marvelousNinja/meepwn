@@ -7,9 +7,8 @@ if(Meteor.isClient) {
 
   Template.projectList.events({
     'click .project-list__delete': function(e) {
-      Meteor.call('deleteProject', this, function(error) {
-        // TODO: Error handling
-        if(error) throw new Error(error);
+      Meteor.call('deleteProject', this._id, function(error) {
+        if(error) Router.current().handleError(error);
       });
     }
   });

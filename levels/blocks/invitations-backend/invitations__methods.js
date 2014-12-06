@@ -1,42 +1,35 @@
 Meteor.methods({
   createInvitation: function(params) {
-    // Authorization
+    var filteredParams = _.pick(params, 'projectId', 'permissions');
+
+    var project = Projects.findOne({ _id: filteredParams.projectId });
+    if(!project) throw new Meteor.Error(404, 'Project not found');
+
     var user = Meteor.user();
-    var projectId = params.projectId;
-
-    if(!Roles.userIsInRole(user, 'invite-' + projectId, 'projects')) {
-      throw new Meteor.Error(403, 'Not Authorized');
+    if(!Permissions.can(user, 'invite', project)) {
+      throw new Meteor.Error(403, 'Not authorized');
     }
+    filteredParams.userId = Meteor.userId();
 
-    // Method 'meat'
-    var permissions = [];
-    if(params.permissions === 'read-modify') {
-      permissions.push('modify-' + projectId);
-    }
-    permissions.push('read-' + projectId);
-
-    var invitationId = Invitations.insert({
-      userId: Meteor.userId(),
-      projectId: projectId,
-      roles: { projects: permissions }
-    });
-    return invitationId;
+    return Invitations.insert(filteredParams);
   },
-  acceptInvitation: function(params) {
-    // Authorization
-    var userId = Meteor.userId();
-    if(!userId) throw new Meteor.Error(403, 'Not Authorized');
+  acceptInvitation: function(invitationId) {
+    var user = Meteor.user();
+    if(!user) throw new Meteor.Error(403, 'Not authorized');
 
-    // Method 'meat'
-    var invitation = Invitations.findOne({ _id: params.invitationId });
-    if(invitation) {
-      for(resource in invitation.roles) {
-        Roles.addUsersToRoles(userId, invitation.roles[resource], resource);
-      }
-      Invitations.remove(invitation);
-      return invitation.projectId;
-    } else {
-      throw new Meteor.Error(404, 'Invitation not found');
-    }
+    var invitation = Invitations.findOne({ _id: invitationId });
+    if(!invitation) throw new Meteor.Error(404, 'Invitation not found');
+
+    var project = Projects.findOne({ _id: invitation.projectId });
+    if(!project) throw new Meteor.Error(404, 'Project not found');
+
+    Permissions.grant(user, invitation.permissions, project);
+    Projects.update({ _id: project._id }, { $pushAll: {
+      readPermissionUserIds: project.readPermissionUserIds,
+      modifyPermissionUserIds: project.modifyPermissionUserIds
+    }});
+
+    Invitations.remove({ _id: invitation._id });
+    return invitation.projectId;
   }
 });

@@ -1,29 +1,23 @@
 Meteor.methods({
-  createProject: function(project) {
-    // Authorization
+  createProject: function(params) {
     var user = Meteor.user();
-    if(!Roles.userIsInRole(user, 'modify', 'projects')) {
-      throw new Meteor.Error(403, 'Not Authorized');
-    }
+    if(!user) throw new Meteor.Error(403, 'Not authorized');
 
-    // Method 'meat'
-    var projectId = Projects.insert(project);
-    //return projectId;
+    var filteredParams = _.pick(params, 'name');
 
-    // Setting up authorization for future calls
-    Roles.addUsersToRoles(user._id, 'modify-' + projectId, 'projects');
-    Roles.addUsersToRoles(user._id, 'read-' + projectId, 'projects');
-    Roles.addUsersToRoles(user._id, 'invite-' + projectId, 'projects');
-    return projectId;
+    Permissions.grant(user, ['read', 'modify', 'invite'], filteredParams);
+
+    return Projects.insert(filteredParams);
   },
-  deleteProject: function(project) {
-    // Authorization
+  deleteProject: function(projectId) {
+    var project = Projects.findOne({ _id: projectId });
+    if(!project) throw new Meteor.Error(404, 'Project not found');
+
     var user = Meteor.user();
-    if(!Roles.userIsInRole(user, 'modify-' + project._id, 'projects')) {
-      throw new Meteor.Error(403, 'Not Authorized');
+    if(!Permissions.can(user, 'modify', project)) {
+      throw new Meteor.Error(403, 'Not authorized');
     }
 
-    // Method 'meat'
-    Projects.remove(project._id);
+    Projects.remove({ _id: project._id });
   }
 });

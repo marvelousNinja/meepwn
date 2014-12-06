@@ -11,13 +11,7 @@ if(Meteor.isServer) {
       },
       {
         find: function(user) {
-          var projectIds = user.roles.projects.filter(function(role) {
-            return role.indexOf('read-') === 0;
-          }).map(function(role) {
-            return role.split('-')[1];
-          });
-
-          return Projects.find({ _id: { $in: projectIds } });
+          return Projects.find({ readPermissionUserIds: user._id });
         },
         children: [
           {
@@ -34,20 +28,13 @@ if(Meteor.isServer) {
           },
           {
             find: function(project) {
-              return Directories.find({ _id: project.rootDirectoryId });
+              return Directories.find({ projectId: project._id });
             },
-            children: [
-              {
-                find: function(rootDirectory) {
-                  return Directories.find({ ancestorIds: rootDirectory._id });
-                }
-              },
-              {
-                find: function(rootDirectory) {
-                  return Files.find({ ancestorIds: rootDirectory._id });
-                }
-              }
-            ]
+          },
+          {
+            find: function(project) {
+              return Files.find({ projectId: project._id });
+            }
           }
         ]
       }
